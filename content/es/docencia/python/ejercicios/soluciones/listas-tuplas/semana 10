@@ -1,0 +1,80 @@
+import java.util.*;
+import java.io.*;
+
+public class CampaniaVacunacion {
+    public static void main(String[] args) {
+        // Conjunto total de ciudadanos
+        Set<String> ciudadanos = new HashSet<>();
+        for (int i = 1; i <= 500; i++) {
+            ciudadanos.add("Ciudadano " + i);
+        }
+
+        // Conjunto ficticio de vacunados con Pfizer (75)
+        Set<String> pfizer = new HashSet<>();
+        for (int i = 1; i <= 75; i++) {
+            pfizer.add("Ciudadano " + i);
+        }
+
+        // Conjunto ficticio de vacunados con AstraZeneca (75)
+        Set<String> astrazeneca = new HashSet<>();
+        for (int i = 50; i < 125; i++) {  // algunos se repiten para tener doble dosis
+            astrazeneca.add("Ciudadano " + i);
+        }
+
+        // 1. Ciudadanos que no se han vacunado
+        Set<String> noVacunados = new HashSet<>(ciudadanos);
+        noVacunados.removeAll(pfizer);
+        noVacunados.removeAll(astrazeneca);
+
+        // 2. Ciudadanos que han recibido ambas dosis (intersección)
+        Set<String> ambasDosis = new HashSet<>(pfizer);
+        ambasDosis.retainAll(astrazeneca);
+
+        // 3. Solo Pfizer
+        Set<String> soloPfizer = new HashSet<>(pfizer);
+        soloPfizer.removeAll(astrazeneca);
+
+        // 4. Solo AstraZeneca
+        Set<String> soloAstra = new HashSet<>(astrazeneca);
+        soloAstra.removeAll(pfizer);
+
+        // Mostrar resultados
+        System.out.println(" Ciudadanos que NO se han vacunado: " + noVacunados.size());
+        System.out.println(noVacunados);
+
+        System.out.println("\n Ciudadanos con ambas dosis: " + ambasDosis.size());
+        System.out.println(ambasDosis);
+
+        System.out.println("\n Ciudadanos con SOLO Pfizer: " + soloPfizer.size());
+        System.out.println(soloPfizer);
+
+        System.out.println("\n Ciudadanos con SOLO AstraZeneca: " + soloAstra.size());
+        System.out.println(soloAstra);
+
+        // Opcional: Generar reporte PDF (ejemplo simple en archivo .txt)
+        generarReporte(noVacunados, ambasDosis, soloPfizer, soloAstra);
+    }
+
+    public static void generarReporte(Set<String> noVacunados, Set<String> ambasDosis,
+                                      Set<String> soloPfizer, Set<String> soloAstra) {
+        try (PrintWriter writer = new PrintWriter(new File("reporte_vacunacion.txt"))) {
+            writer.println("=== REPORTE DE VACUNACIÓN COVID-19 ===\n");
+
+            writer.println(" No vacunados (" + noVacunados.size() + "):");
+            writer.println(noVacunados + "\n");
+
+            writer.println(" Ambas dosis (" + ambasDosis.size() + "):");
+            writer.println(ambasDosis + "\n");
+
+            writer.println(" Solo Pfizer (" + soloPfizer.size() + "):");
+            writer.println(soloPfizer + "\n");
+
+            writer.println("Solo AstraZeneca (" + soloAstra.size() + "):");
+            writer.println(soloAstra + "\n");
+
+            System.out.println("\n✅ Reporte generado en 'reporte_vacunacion.txt'");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
